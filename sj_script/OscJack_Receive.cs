@@ -34,8 +34,8 @@ public class OscJack_Receive : MonoBehaviour
 	****************************************/
 	/******************************
 	******************************/
-	// void OnEnable()
-	void Start()
+	void OnEnable()
+	// void Start()
 	{
 		/********************
 		********************/
@@ -110,9 +110,13 @@ public class OscJack_Receive : MonoBehaviour
 	}
 	
 	/******************************
+	OnDestroy で掃除をすると、本scriptをattachしたobjectがactiveでない場合でも、本処理が走る。
+	その場合は、
+		if(server_key != null)
+	などが必要
 	******************************/
-	// void OnDisable()
-	void OnDestroy()
+	void OnDisable()
+	// void OnDestroy()
 	{
 		server_key.Dispose();
 		server_key = null;

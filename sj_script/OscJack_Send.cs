@@ -20,14 +20,16 @@ public class OscJack_Send : MonoBehaviour
 	****************************************/
 	/******************************
 	******************************/
-	void Start()
+	// void Start()
+	void OnEnable()
 	{
 		client = new OscClient(ipAddress, port);
 	}
 
 	/******************************
 	******************************/
-	void OnDestroy()
+	void OnDisable()
+	// void OnDestroy()
 	{
 		client.Dispose();
 	}
