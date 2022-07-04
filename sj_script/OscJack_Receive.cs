@@ -19,6 +19,8 @@ public class OscJack_Receive : MonoBehaviour
 {
 	/****************************************
 	****************************************/
+	UnityEngine.Object sync = new UnityEngine.Object();
+	
 	[SerializeField] int port_Mouse = 12345;
 	[SerializeField] int port_key = 12346;
 	[SerializeField] int port_various = 12347;
@@ -43,8 +45,10 @@ public class OscJack_Receive : MonoBehaviour
 		server_Mouse.MessageDispatcher.AddCallback(
 			"/MousePos", // OSC address
 			(string address, OscDataHandle data) => {
-				MousePos.x = data.GetElementAsFloat(0);  // GetElementAsInt, GetElementAsFloat, GetElementAsString
-				MousePos.y = data.GetElementAsFloat(1);
+				lock(sync){
+					MousePos.x = data.GetElementAsFloat(0);  // GetElementAsInt, GetElementAsFloat, GetElementAsString
+					MousePos.y = data.GetElementAsFloat(1);
+				}
 			}
 		);
 		
@@ -57,7 +61,9 @@ public class OscJack_Receive : MonoBehaviour
 				DATASET Data = new DATASET();
 				Data.key = data.GetElementAsInt(0); // GetElementAsInt, GetElementAsFloat, GetElementAsString
 				
-				DataSet.Enqueue(Data);
+				lock(sync){
+					DataSet.Enqueue(Data);
+				}
 			}
 		);
 		
@@ -67,15 +73,17 @@ public class OscJack_Receive : MonoBehaviour
 		server_various.MessageDispatcher.AddCallback(
 			"/various", // OSC address
 			(string address, OscDataHandle data) => {
-				Debug.Log(data.GetElementAsString(0));
-				Debug.Log(data.GetElementAsFloat(1));
-				Debug.Log(data.GetElementAsInt(2));
-				Debug.Log(data.GetElementAsString(3));
-				Debug.Log(data.GetElementAsFloat(4));
-				Debug.Log(data.GetElementAsInt(5));
-				Debug.Log(data.GetElementAsString(6));
-				Debug.Log(data.GetElementAsFloat(7));
-				Debug.Log(data.GetElementAsInt(8));
+				lock(sync){
+					Debug.Log(data.GetElementAsString(0));
+					Debug.Log(data.GetElementAsFloat(1));
+					Debug.Log(data.GetElementAsInt(2));
+					Debug.Log(data.GetElementAsString(3));
+					Debug.Log(data.GetElementAsFloat(4));
+					Debug.Log(data.GetElementAsInt(5));
+					Debug.Log(data.GetElementAsString(6));
+					Debug.Log(data.GetElementAsFloat(7));
+					Debug.Log(data.GetElementAsInt(8));
+				}
 			}
 		);
 	}
@@ -85,16 +93,20 @@ public class OscJack_Receive : MonoBehaviour
 	void Update(){
 		/********************
 		********************/
-		label = string.Format("({0}, {1})", MousePos.x, MousePos.y);
+		lock(sync){
+			label = string.Format("({0}, {1})", MousePos.x, MousePos.y);
+		}
 		
 		/********************
 		********************/
-		for(int i = 0; 0 < DataSet.Count; i++){
-			DATASET Data = new DATASET();
-			Data = DataSet.Dequeue();
-			
-			string message = string.Format("{0}th : key = {1}", i, Data.key);
-			Debug.Log(message);
+		lock(sync){
+			for(int i = 0; 0 < DataSet.Count; i++){
+				DATASET Data = new DATASET();
+				Data = DataSet.Dequeue();
+				
+				string message = string.Format("{0}th : key = {1}", i, Data.key);
+				Debug.Log(message);
+			}
 		}
 	}
 	
